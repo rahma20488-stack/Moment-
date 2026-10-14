@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>أثر|د | مرجعك</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F5F3FF;--card:#fff;--ink:#221B3F;--mut:#6E6890;--acc:#FFB400;--acc-ink:#221B3F;--teal:#0FA3A3;--line:#E3DEF5;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#17132B;--card:#231E3F;--ink:#F1EEFF;--mut:#A69FCB;--line:#352E5C}}
+:root[data-theme="dark"]{--bg:#17132B;--card:#231E3F;--ink:#F1EEFF;--mut:#A69FCB;--line:#352E5C}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Tajawal,system-ui,-apple-system,"Segoe UI",Tahoma,sans-serif;line-height:1.6}
+.app{max-width:480px;margin:0 auto;padding:16px 16px 40px}
+h1{font-size:26px;font-weight:800;margin:0}
+h2{font-size:18px;font-weight:800;margin:0 0 8px}
+p{margin:0}
+.mut{color:var(--mut);font-size:14px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.streak{background:var(--card);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-weight:800;font-size:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:14px}
+.btn{font:inherit;font-weight:800;border:0;border-radius:14px;padding:12px 18px;background:var(--acc);color:var(--acc-ink);cursor:pointer;width:100%;font-size:16px}
+.btn.alt{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn:focus-visible,input:focus-visible,textarea:focus-visible,.rx button:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+input[type=text],textarea{font:inherit;width:100%;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--ink)}
+.timer{font-size:44px;font-weight:800;text-align:center;color:var(--teal);font-variant-numeric:tabular-nums}
+.pick{display:block;border:2px dashed var(--line);border-radius:16px;padding:28px 12px;text-align:center;cursor:pointer;margin:10px 0}
+.pick img{max-width:100%;border-radius:12px;display:block;margin:auto}
+.moment{border-radius:18px;overflow:hidden;background:var(--card);border:1px solid var(--line);margin-bottom:14px}
+.pic{height:190px;display:flex;align-items:center;justify-content:center;font-size:64px}
+.pic img{width:100%;height:100%;object-fit:cover}
+.mbody{padding:12px 14px}
+.who{display:flex;justify-content:space-between;font-weight:800}
+.rx{display:flex;gap:8px;margin-top:10px}
+.rx button{font:inherit;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;padding:4px 12px;cursor:pointer}
+.rx button.on{background:var(--acc);color:var(--acc-ink);border-color:var(--acc)}
+.lock{text-align:center;padding:24px 16px;border:2px dashed var(--line);border-radius:18px;margin-bottom:14px}
+.lock .big{font-size:40px}
+.spons{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 14px;margin-bottom:14px;font-size:14px}
+.hide{display:none}
+.row{display:flex;gap:8px}
+.toast{position:fixed;inset-inline:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));max-width:448px;margin:auto;background:var(--ink);color:var(--bg);padding:12px 16px;border-radius:14px;text-align:center;font-weight:800}
+@media(prefers-reduced-motion:no-preference){.bell{animation:ring 1.2s ease-in-out 3}@keyframes ring{0%,100%{transform:rotate(0)}25%{transform:rotate(14deg)}75%{transform:rotate(-14deg)}}}
+</style>
+</head>
+<body>
+<div class="app" id="app"></div>
+<script>
+var KEY="lahza_v1",S={name:"",streak:0,last:"",mine:null,mineDay:"",rx:{}};
+try{var r=localStorage.getItem(KEY);if(r)S=Object.assign(S,JSON.parse(r))}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+var today=new Date().toISOString().slice(0,10);
+var FR=[{n:"سلطان",e:"☕",c:"#FFB400",t:"قهوة الصباح قبل الدوام",tm:"7:42 ص"},
+{n:"نورة",e:"🏜️",c:"#0FA3A3",t:"طلعة البر مع الشلة",tm:"4:15 م"},
+{n:"فهد",e:"🍔",c:"#FF6F61",t:"غداء الجمعة عند الوالدة",tm:"1:30 م"},
+{n:"ريم",e:"📚",c:"#7C5CFF",t:"مذاكرة ومعها شاي",tm:"9:05 م"}];
+var phase="home",secs=120,tid=null,draft={img:"",txt:""},toast="";
+var $=function(s){return document.querySelector(s)};
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})}
+function posted(){return S.mine&&S.mineDay===today}
+function render(){
+var a=$("#app");
+if(!S.name){a.innerHTML='<div class="top"><h1>لحظة اليوم</h1></div><div class="card"><h2>أهلاً فيك</h2><p class="mut" style="margin-bottom:12px">مرة باليوم يجيك تنبيه، توثق لحظتك، وتشوف لحظات أصحابك.</p><input type="text" id="nm" placeholder="اسمك" aria-label="اسمك"><div style="height:12px"></div><button class="btn" id="go">ابدأ</button></div><p class="mut" style="text-align:center">نموذج تجريبي من «مرجعك»</p>';
+$("#go").onclick=function(){var v=$("#nm").value.trim();if(!v){return}S.name=v;save();render()};return}
+var h='<div class="top"><div><h1>لحظة اليوم</h1><p class="mut">أهلاً '+esc(S.name)+'</p></div><div class="streak">🔥 '+S.streak+' يوم</div></div>';
+h+='<div class="spons">☕ <span>لحظات الصباح برعاية <b>مقهى الديرة</b>: خصم 15% لمن يوثق لحظته عندهم.</span></div>';
+if(phase==="alert"){
+h+='<div class="card" style="text-align:center"><div class="bell" style="font-size:48px">🔔</div><h2>وش تسوي الحين؟</h2><p class="mut">عندك دقيقتين توثق لحظتك</p><div class="timer" id="tm">'+fmt(secs)+'</div><button class="btn" id="cap">صوّر لحظتك</button></div>';
+}else if(phase==="compose"){
+h+='<div class="card"><h2>لحظتك</h2><label class="pick" id="pk">'+(draft.img?'<img src="'+draft.img+'" alt="معاينة اللحظة">':'<div style="font-size:36px">📷</div><div>اضغط لالتقاط صورة</div>')+'<input type="file" accept="image/*" capture="environment" id="fl" class="hide"></label><textarea id="tx" rows="2" maxlength="80" placeholder="سطر اختياري عن لحظتك">'+esc(draft.txt)+'</textarea><div class="mut" style="margin:6px 0 12px">الوقت المتبقي: <b id="tm">'+fmt(secs)+'</b></div><div class="row"><button class="btn" id="pub">انشر لحظتك</button><button class="btn alt" id="cn" style="width:40%">إلغاء</button></div></div>';
+}else{
+if(!posted()){h+='<div class="lock"><div class="big">🔒</div><h2>لحظات أصحابك مقفلة</h2><p class="mut" style="margin-bottom:14px">وثّق لحظتك اليوم وتنفتح لك.</p><button class="btn" id="sim">جرّب التنبيه الآن</button></div>';}
+else{h+='<h2>لحظات اليوم</h2>'+card({n:S.name+" (أنت)",e:"",img:S.mine.img,c:"#0FA3A3",t:S.mine.txt||"لحظتي",tm:S.mine.tm},"me");
+FR.forEach(function(f,i){h+=card(f,"f"+i)});
+h+='<button class="btn alt" id="sim">جرّب تنبيه جديد (تجربة)</button><button class="btn alt" id="rs" style="margin-top:10px">ابدأ من جديد</button>'}
+}
+a.innerHTML=h;bind()}
+function card(f,id){
+var rx=S.rx[id]||{};
+var btn=function(k){return '<button data-id="'+id+'" data-k="'+k+'" class="'+(rx[k]?"on":"")+'" aria-pressed="'+(!!rx[k])+'">'+k+'</button>'};
+return '<div class="moment"><div class="pic" style="background:'+f.c+'33">'+(f.img?'<img src="'+f.img+'" alt="">':f.e)+'</div><div class="mbody"><div class="who"><span>'+esc(f.n)+'</span><span class="mut">'+f.tm+'</span></div><p>'+esc(f.t)+'</p><div class="rx">'+btn("🔥")+btn("😂")+btn("❤️")+'</div></div></div>'}
+function fmt(s){var m=Math.floor(s/60),x=s%60;return m+":"+(x<10?"0":"")+x}
+function tick(){clearInterval(tid);tid=setInterval(function(){secs--;var t=$("#tm");if(t)t.textContent=fmt(secs);if(secs<=0){clearInterval(tid);phase="home";note("انتهى الوقت. جرّب مرة ثانية");render()}},1000)}
+function note(m){var d=document.createElement("div");d.className="toast";d.setAttribute("role","status");d.textContent=m;document.body.appendChild(d);setTimeout(function(){d.remove()},2600)}
+function small(file,cb){var fr=new FileReader();fr.onload=function(){var im=new Image();im.onload=function(){var w=480,k=Math.min(1,w/im.width),c=document.createElement("canvas");c.width=im.width*k;c.height=im.height*k;c.getContext("2d").drawImage(im,0,0,c.width,c.height);cb(c.toDataURL("image/jpeg",.6))};im.src=fr.result};fr.readAsDataURL(file)}
+function bind(){
+var g=function(i){return document.getElementById(i)};
+if(g("sim"))g("sim").onclick=function(){phase="alert";secs=120;draft={img:"",txt:""};render();tick()};
+if(g("cap"))g("cap").onclick=function(){phase="compose";render()};
+if(g("cn"))g("cn").onclick=function(){clearInterval(tid);phase="home";render()};
+if(g("rs"))g("rs").onclick=function(){S={name:S.name,streak:0,last:"",mine:null,mineDay:"",rx:{}};save();render()};
+if(g("fl"))g("fl").onchange=function(e){var f=e.target.files[0];if(!f)return;draft.txt=g("tx").value;small(f,function(d){draft.img=d;render()})};
+if(g("pub"))g("pub").onclick=function(){
+if(!draft.img){note("أضف صورة للحظتك أولاً");return}
+clearInterval(tid);var y=new Date(Date.now()-864e5).toISOString().slice(0,10);
+if(S.last!==today){S.streak=(S.last===y)?S.streak+1:1;S.last=today}
+var n=new Date(),hh=n.getHours(),mm=n.getMinutes();
+S.mine={img:draft.img,txt:g("tx").value.trim(),tm:(hh%12||12)+":"+(mm<10?"0":"")+mm+(hh<12?" ص":" م")};S.mineDay=today;save();phase="home";render();note("اننشرت لحظتك. انفتحت لك لحظات أصحابك")};
+document.querySelectorAll(".rx button").forEach(function(b){b.onclick=function(){var id=b.dataset.id,k=b.dataset.k;S.rx[id]=S.rx[id]||{};S.rx[id][k]=!S.rx[id][k];save();var y=window.scrollY;render();window.scrollTo(0,y)}})}
+render();
+</script>
+</body>
+</html>
